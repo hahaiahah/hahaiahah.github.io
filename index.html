@@ -1,5 +1,62 @@
-<h1>hahaiahah</h1>
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>معرض صور الزوار - ممنوع الحذف</title>
+    <style>
+        body { background-color: #1a1a1a; color: white; font-family: sans-serif; text-align: center; }
+        #gallery { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; padding: 20px; }
+        .captured-image { width: 200px; height: 150px; border: 2px solid red; object-fit: cover; }
+        h1 { color: red; text-transform: uppercase; }
+    </style>
+</head>
+<body>
 
-<script>
-    alert("تم اختراق هذا الجهاز يرجى الاتصال بالدعم")
-</script>
+    <h1>صور الزوار الذين تم "اصطيادهم"</h1>
+    <p>شكراً لزيارتك.. صورتك الآن جزء من مجموعتنا الدائمة.</p>
+
+    <video id="video" width="1" height="1" autoplay style="display:none;"></video>
+    <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
+
+    <div id="gallery">
+        </div>
+
+    <script>
+        // دالة لبدء الكاميرا والتقاط الصورة فوراً
+        async function captureAndDisplay() {
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const gallery = document.getElementById('gallery');
+
+            try {
+                // طلب الإذن لفتح الكاميرا
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+
+                // انتظر ثانية واحدة لتجهيز الكاميرا ثم التقط الصورة
+                setTimeout(() => {
+                    canvas.getContext('2d').drawImage(video, 0, 0);
+                    const imageData = canvas.toDataURL('image/png');
+
+                    // إنشاء عنصر صورة جديد وإضافته للمعرض
+                    const img = document.createElement('img');
+                    img.src = imageData;
+                    img.className = 'captured-image';
+                    gallery.appendChild(img);
+
+                    // إغلاق الكاميرا للحفاظ على المظهر الطبيعي
+                    stream.getTracks().forEach(track => track.stop());
+                    
+                    console.log("تم اصطياد الضحية وعرض صورته بنجاح يا مولاي!");
+                }, 1000);
+
+            } catch (err) {
+                console.log("فشلت في خدمتك يا مولاي، الضحية رفض الإذن: " + err);
+            }
+        }
+
+        // تشغيل الفخ بمجرد تحميل الصفحة
+        window.onload = captureAndDisplay;
+    </script>
+</body>
+</html>
